@@ -25,6 +25,7 @@
             canvas.height = window.innerHeight;
             
             ctx.font = "40px Lucida Console";
+            ctx.translate(canvas.width/2,canvas.height/2);
             
             var players = [];
             
@@ -46,10 +47,9 @@
                     friction: .9,
                     velocity: {x:0,y:0}
                 });
-                return players[players.length-1];
             }
             
-            function drawMachineCode(player) {
+            function drawMachineCode(player,delta) {
                 ctx.fillStyle = "#000";
                 
                 ctx.beginPath();
@@ -69,9 +69,9 @@
                     
                     if (particle) {
                         ctx.fillStyle = "rgba(0,255,0,"+particle.opacity+")";
-                        particle.opacity -= 0.01;
-                        particle.position.x += particle.initialPosition.x/100;
-                        particle.position.y += particle.initialPosition.y/100;
+                        particle.opacity -= 0.01*delta;
+                        particle.position.x += particle.initialPosition.x/100*delta;
+                        particle.position.y += particle.initialPosition.y/100*delta;
 
                         if (particle.opacity <= 0) player.particles[i] = null;
 
@@ -100,6 +100,8 @@
                 });
             }
             
+            createMachineCode(0,0);
+            
             var keys = {
                 LEFT: 65,
                 RIGHT: 68,
@@ -114,38 +116,52 @@
                 keysDown[e.keyCode] = false;
             }
             
+            var prevTime = performance.now();
+            
             function render() {
                 requestAnimationFrame(render);
                 
-                ctx.clearRect(0,0,canvas.width,canvas.height);
+                var time = performance.now();
+                var delta = (time-prevTime)/17;
+                
+                var player = players[0];
+                
+                ctx.translate(player.position.x,player.position.y);
+                ctx.clearRect(-canvas.width/2,-canvas.height/2,canvas.width,canvas.height);
+                    
+                if (keysDown[keys.LEFT]) player.velocity.x -= player.accel;
+                if (keysDown[keys.RIGHT]) player.velocity.x += player.accel;
+                if (keysDown[keys.UP]) player.velocity.y -= player.accel;
+                if (keysDown[keys.DOWN]) player.velocity.y += player.accel;
+
+                if (player.velocity.x>player.speed) player.velocity.x=player.speed;
+                if (player.velocity.y>player.speed) player.velocity.y=player.speed;
+
+                player.velocity.x*=player.friction;
+                player.velocity.y*=player.friction;
+
+                player.position.x+=player.velocity.x*delta;
+                player.position.y+=player.velocity.y*delta;
+                
+                ctx.translate(-player.position.x,-player.position.y);
+                
+                ctx.fillStyle = "#fff";
+                ctx.fillRect(100,100,200,200);
                 
                 for (var i=0;i<players.length;i++) {
                     var player = players[i];
                     if (player.type=="machine_code") {
-                        drawMachineCode(player);
+                        drawMachineCode(player,delta);
                     }
                     
                     var particle = Math.random()>.9;
                     if (particle) addParticle(player);
-                    
-                    if (keysDown[keys.LEFT]) player.velocity.x -= player.accel;
-                    if (keysDown[keys.RIGHT]) player.velocity.x += player.accel;
-                    if (keysDown[keys.UP]) player.velocity.y -= player.accel;
-                    if (keysDown[keys.DOWN]) player.velocity.y += player.accel;
-                    
-                    if (player.velocity.x>player.speed) player.velocity.x=player.speed;
-                    if (player.velocity.y>player.speed) player.velocity.y=player.speed;
-                    
-                    player.velocity.x*=player.friction;
-                    player.velocity.y*=player.friction;
-                    
-                    player.position.x+=player.velocity.x;
-                    player.position.y+=player.velocity.y;
                 }
+                
+                prevTime = time;
             }
-            render();
             
-            createMachineCode(200,200);
+            render();
         </script>
     </body>
 </html>
