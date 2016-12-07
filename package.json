@@ -4,6 +4,7 @@
   "description": "**hacker.io** is an io game where you play as different coding languages. It is a game I'm making to learn about **GitHub**, and development in general.",
   "main": "index.js",
   "scripts": {
+    "start": "node src/server/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -17,6 +18,8 @@
   },
   "homepage": "https://github.com/WheatleyTheCoder/hacker.io#readme",
   "dependencies": {
+    "express": "4.14.0",
+    "socket.io": "1.7.1",
     "webpack": "1.13.3"
   }
 }
