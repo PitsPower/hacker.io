@@ -1,7 +1,7 @@
 var canvas = document.getElementById("game");
 var ctx = canvas.getContext("2d");
 
-var socket = require("socket.io-client").connect("http://82.35.90.19:3000");
+var socket = require("socket.io-client").connect(window.location.href);
 
 var grid = require("./grid");
 
