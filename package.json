@@ -1,0 +1,22 @@
+{
+  "name": "hacker.io",
+  "version": "1.0.0",
+  "description": "**hacker.io** is an io game where you play as different coding languages. It is a game I'm making to learn about **GitHub**, and development in general.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WheatleyTheCoder/hacker.io.git"
+  },
+  "author": "WheatleyTheCoder <slendermanwithaface@gmail.com> (http://project2.neocities.org/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/WheatleyTheCoder/hacker.io/issues"
+  },
+  "homepage": "https://github.com/WheatleyTheCoder/hacker.io#readme",
+  "dependencies": {
+    "webpack": "1.13.3"
+  }
+}
