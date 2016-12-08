@@ -75,8 +75,9 @@ function render() {
 
     for (var i=0;i<players.all.length;i++) {
         var player = players.all[i];
-        if (player && player.type=="machine_code") {
-            players.drawMachineCode(player,delta);
+        if (player) {
+            if (player.type=="machine_code") players.drawMachineCode(player,delta);
+            if (player.type=="asm") players.drawASM(player,delta);
         }
         
         var particle = Math.random()>.9;

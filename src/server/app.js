@@ -21,7 +21,7 @@ io.on('connection', function(socket) {
     var socketID = sockets.length;
     sockets.push(socket);
     
-    players.createMachineCode(0,0);
+    players.createPlayer('machine_code',0,0);
     players.all[socketID].id = socketID;
     
     socket.on('keydown', function(keyCode) {

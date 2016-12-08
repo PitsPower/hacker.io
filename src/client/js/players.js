@@ -9,19 +9,7 @@ exports.all = [];
 exports.temp = [];
 
 exports.drawMachineCode = function(player,delta) {
-    ctx.fillStyle = "#000";
-
-    ctx.beginPath();
-    ctx.arc(player.position.x,player.position.y,player.radius,0,2*Math.PI);
-    ctx.fill();
-
-    ctx.fillStyle = "#fff";
-    // M is used to get the height because its width is about equal to its height
-    ctx.fillText(
-        player.text,
-        player.position.x-(ctx.measureText(player.text).width/2),
-        player.position.y+(ctx.measureText("M").width/2)
-    );
+    drawPlayer(player,"#000","#fff");
     
     if (particles[player.id]) {
         for (var i=0;i<particles[player.id].length;i++) {
@@ -43,4 +31,23 @@ exports.drawMachineCode = function(player,delta) {
             }
         }
     }
+}
+exports.drawASM = function(player,delta) {
+    drawPlayer(player,"#00f","#fff");
+}
+
+function drawPlayer(player,mainCol,textCol) {
+    ctx.fillStyle = mainCol;
+
+    ctx.beginPath();
+    ctx.arc(player.position.x,player.position.y,player.radius,0,2*Math.PI);
+    ctx.fill();
+
+    ctx.fillStyle = textCol;
+    // M is used to get the height because its width is about equal to its height
+    ctx.fillText(
+        player.text,
+        player.position.x-(ctx.measureText(player.text).width/2),
+        player.position.y+(ctx.measureText("M").width/2)
+    );
 }
