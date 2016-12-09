@@ -7,6 +7,7 @@ var grid = require("./grid");
 
 var particles = [];
 var players = require("./players")(ctx,particles);
+var food = require("./food")(ctx);
 
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
@@ -72,12 +73,13 @@ function render() {
 
     ctx.fillStyle = "#fff";
     ctx.fillRect(-100,-100,200,200);
+    
+    food.draw(0,0);
 
     for (var i=0;i<players.all.length;i++) {
         var player = players.all[i];
         if (player) {
-            if (player.type=="machine_code") players.drawMachineCode(player,delta);
-            if (player.type=="asm") players.drawASM(player,delta);
+            players.drawPlayer(player,delta);
         }
         
         var particle = Math.random()>.9;

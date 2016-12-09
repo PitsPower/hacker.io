@@ -8,6 +8,11 @@ module.exports = function(context,particleData) {
 exports.all = [];
 exports.temp = [];
 
+exports.drawPlayer = function(player,delta) {
+    if (player.type=="machine_code") exports.drawMachineCode(player,delta);
+    if (player.type=="asm") exports.drawASM(player,delta);
+    if (player.type=="c") exports.drawC(player,delta);
+}
 exports.drawMachineCode = function(player,delta) {
     drawPlayer(player,"#000","#fff");
     
@@ -35,6 +40,9 @@ exports.drawMachineCode = function(player,delta) {
 exports.drawASM = function(player,delta) {
     drawPlayer(player,"#00f","#fff");
 }
+exports.drawC = function(player,delta) {
+    drawPlayer(player,"#f00","#000");
+}
 
 function drawPlayer(player,mainCol,textCol) {
     ctx.fillStyle = mainCol;
@@ -44,10 +52,12 @@ function drawPlayer(player,mainCol,textCol) {
     ctx.fill();
 
     ctx.fillStyle = textCol;
+    ctx.font = (player.radius/75*40)+"px Lucida Console";
     // M is used to get the height because its width is about equal to its height
     ctx.fillText(
         player.text,
         player.position.x-(ctx.measureText(player.text).width/2),
         player.position.y+(ctx.measureText("M").width/2)
     );
+    ctx.font = "40px Lucida Console";
 }

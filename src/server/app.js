@@ -11,7 +11,8 @@ var keys = {
     LEFT: 65,
     RIGHT: 68,
     UP: 87,
-    DOWN: 83
+    DOWN: 83,
+    SPACE: 32
 };
 var keysDown = [];
 
@@ -21,7 +22,7 @@ io.on('connection', function(socket) {
     var socketID = sockets.length;
     sockets.push(socket);
     
-    players.createPlayer('machine_code',0,0);
+    players.createPlayer(['machine_code','asm','c'][~~(Math.random()*3)],0,0);
     players.all[socketID].id = socketID;
     
     socket.on('keydown', function(keyCode) {
@@ -46,6 +47,8 @@ function calculate() {
             if (player.keysDown[keys.RIGHT]) player.velocity.x += player.accel;
             if (player.keysDown[keys.UP]) player.velocity.y -= player.accel;
             if (player.keysDown[keys.DOWN]) player.velocity.y += player.accel;
+            
+            if (player.keysDown[keys.SPACE]) player.radius += 1;
 
             if (player.velocity.x>player.speed) player.velocity.x=player.speed;
             if (player.velocity.y>player.speed) player.velocity.y=player.speed;
