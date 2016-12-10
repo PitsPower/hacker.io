@@ -23,7 +23,7 @@ io.on('connection', function(socket) {
     sockets.push(socket);
     socket.emit('player-id', socketID);
     
-    players.create(['machine_code','asm','c'][~~(Math.random()*3)],0,0);
+    players.create(['machine','asm','c'][~~(Math.random()*3)],0,0);
     players.all[socketID].id = socketID;
     
     socket.on('keydown', function(keyCode) {
@@ -106,31 +106,39 @@ function calculate() {
     }
     if (Math.random()>.99) food.create(Math.random()*1000-500,Math.random()*1000-500);
     
-    var compressedPlayers = [];
+    var packetData = [];
+    
     for (var i=0;i<players.all.length;i++) {
         var player = players.all[i];
-        compressedPlayers.push(player?[
-            player.type,
-            player.text,
+        packetData.push(
+            parseInt(player.type,36),
+            parseInt(player.text.toLowerCase(),36),
             player.position.x,
             player.position.y,
             player.radius,
             player.velocity.x,
             player.velocity.y
-        ]:null);
+        );
     }
-    var compressedFood = [];
+    packetData.push(999999999);
     for (var i=0;i<food.all.length;i++) {
         var thisFood = food.all[i];
-        compressedFood.push(thisFood?[
+        packetData.push(
             thisFood.text,
             thisFood.position.x,
             thisFood.position.y
-        ]:null);
+        );
     }
+    
+    var slimmerState = new Float64Array(packetData);
+    var ucharView = new Uint8Array(slimmerState.buffer);
+    var packetMessage = String.fromCharCode.apply(
+        String, [].slice.call(ucharView,0)
+    );
+    
     for (var i=0;i<sockets.length;i++) {
         var socket = sockets[i];
-        if (socket) socket.emit('packet-data', [compressedPlayers,compressedFood]);
+        if (socket) socket.emit('packet-data', packetMessage);
     }
 }
 setInterval(calculate,1000/60);
