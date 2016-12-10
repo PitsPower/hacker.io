@@ -20,6 +20,6 @@ module.exports.create = function(type,x,y) {
         friction: .9,
         velocity: {x:0,y:0},
         
-        keysDown: []
+        keysDown: {}
     });
 }

@@ -15,7 +15,6 @@ var keys = {
     DOWN: 83,
     SPACE: 32
 };
-var keysDown = [];
 
 var sockets = [];
 
@@ -34,9 +33,16 @@ io.on('connection', function(socket) {
         players.all[socketID].keysDown[keyCode] = false;
     });
     
+    socket.on('shift-id', function(keyCode) {
+        socketID--;
+    });
     socket.on('disconnect', function() {
-        sockets[socketID] = null;
-        players.all[socketID] = null;
+        sockets.splice(socketID,1);
+        players.all.splice(socketID,1);
+        
+        for (var i=socketID;i<sockets.length;i++) {
+            sockets[i].emit('shift-id');
+        }
     });
 });
 
@@ -92,16 +98,39 @@ function calculate() {
                 var deltaY = thisFood.position.y-player.position.y;
 
                 if (deltaX*deltaX+deltaY*deltaY<Math.pow(player.radius+30,2)) {
-                    food.all[j] = null;
+                    food.all.splice(j,1);
                     player.radius += 5;
                 }
             }
         }
     }
     if (Math.random()>.99) food.create(Math.random()*1000-500,Math.random()*1000-500);
+    
+    var compressedPlayers = [];
+    for (var i=0;i<players.all.length;i++) {
+        var player = players.all[i];
+        compressedPlayers.push(player?[
+            player.type,
+            player.text,
+            player.position.x,
+            player.position.y,
+            player.radius,
+            player.velocity.x,
+            player.velocity.y
+        ]:null);
+    }
+    var compressedFood = [];
+    for (var i=0;i<food.all.length;i++) {
+        var thisFood = food.all[i];
+        compressedFood.push(thisFood?[
+            thisFood.text,
+            thisFood.position.x,
+            thisFood.position.y
+        ]:null);
+    }
     for (var i=0;i<sockets.length;i++) {
         var socket = sockets[i];
-        if (socket) socket.emit('packet-data', {id:i,players:players.all,food:food.all});
+        if (socket) socket.emit('packet-data', [compressedPlayers,compressedFood]);
     }
 }
 setInterval(calculate,1000/60);

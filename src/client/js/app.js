@@ -46,9 +46,52 @@ var playerID;
 socket.on('player-id', function(id) {
     playerID = id;
 });
+var shiftID = false;
+socket.on('shift-id', function() {
+    shiftID = true;
+});
 socket.on('packet-data', function(data) {
-    players.temp = data.players;
-    food.all = data.food;
+    players.temp = [];
+    food.all = [];
+    
+    var playersData = data[0];
+    for (var i=0;i<playersData.length;i++) {
+        var playerData = playersData[i];
+        
+        if (playerData) {
+            var uncompressedPlayerData = {
+                type: playerData[0],
+                text: playerData[1],
+                position: {
+                    x: playerData[2],
+                    y: playerData[3]
+                },
+                radius: playerData[4],
+                velocity: {
+                    x: playerData[5],
+                    y: playerData[6]
+                }
+            };
+        }
+        
+        players.temp.push(uncompressedPlayerData);
+    }
+    var foodsData = data[1];
+    for (var i=0;i<foodsData.length;i++) {
+        var foodData = foodsData[i];
+        
+        if (foodData) {
+            var uncompressedFoodData = {
+                text: foodData[0],
+                position: {
+                    x: foodData[1],
+                    y: foodData[2]
+                }
+            };
+        }
+        
+        food.all.push(uncompressedFoodData);
+    }
 });
 
 var prevTime = performance.now();
@@ -57,7 +100,7 @@ function render() {
 
     var time = performance.now();
     var delta = (time-prevTime)/17;
-
+    
     var player = players.all[playerID];
     
     if (player) {
@@ -65,6 +108,12 @@ function render() {
         ctx.clearRect(-canvas.width/2,-canvas.height/2,canvas.width,canvas.height);
 
         grid.draw(ctx,player,80);
+    }
+
+    if (shiftID) {
+        playerID--;
+        socket.emit('shift-id');
+        shiftID = false;
     }
     
     players.all = players.temp;
