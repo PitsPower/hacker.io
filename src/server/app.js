@@ -22,6 +22,7 @@ var sockets = [];
 io.on('connection', function(socket) {
     var socketID = sockets.length;
     sockets.push(socket);
+    socket.emit('player-id', socketID);
     
     players.create(['machine_code','asm','c'][~~(Math.random()*3)],0,0);
     players.all[socketID].id = socketID;

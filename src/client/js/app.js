@@ -43,8 +43,10 @@ document.onkeyup = function(e) {
 }
 
 var playerID;
+socket.on('player-id', function(id) {
+    playerID = id;
+});
 socket.on('packet-data', function(data) {
-    playerID = data.id;
     players.temp = data.players;
     food.all = data.food;
 });
