@@ -9,7 +9,7 @@ exports.all = [];
 exports.temp = [];
 
 exports.drawPlayer = function(player,delta) {
-    if (player.type=="machine_code") exports.drawMachineCode(player,delta);
+    if (player.type=="machine") exports.drawMachineCode(player,delta);
     if (player.type=="asm") exports.drawASM(player,delta);
     if (player.type=="c") exports.drawC(player,delta);
 }

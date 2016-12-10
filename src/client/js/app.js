@@ -46,9 +46,15 @@ var playerID;
 socket.on('player-id', function(id) {
     playerID = id;
 });
-socket.on('packet-data', function(data) {
-    players.temp = data.players;
-    food.all = data.food;
+var shiftID = false;
+socket.on('shift-id', function() {
+    shiftID = true;
+});
+var data = require('./data');
+socket.on('packet-data', function(d) {
+    var newData = data.decompress(d);
+    players.temp = newData.players;
+    food.all = newData.food;
 });
 
 var prevTime = performance.now();
@@ -57,7 +63,7 @@ function render() {
 
     var time = performance.now();
     var delta = (time-prevTime)/17;
-
+    
     var player = players.all[playerID];
     
     if (player) {
@@ -65,6 +71,12 @@ function render() {
         ctx.clearRect(-canvas.width/2,-canvas.height/2,canvas.width,canvas.height);
 
         grid.draw(ctx,player,80);
+    }
+
+    if (shiftID) {
+        playerID--;
+        socket.emit('shift-id');
+        shiftID = false;
     }
     
     players.all = players.temp;
