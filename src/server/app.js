@@ -4,6 +4,7 @@ var server = require('http').Server(app);
 var io = require('socket.io')(server);
 
 var players = require('./players');
+var food = require('./food');
 
 app.use(express.static(__dirname+'/../client'));
 
@@ -22,7 +23,7 @@ io.on('connection', function(socket) {
     var socketID = sockets.length;
     sockets.push(socket);
     
-    players.createPlayer(['machine_code','asm','c'][~~(Math.random()*3)],0,0);
+    players.create(['machine_code','asm','c'][~~(Math.random()*3)],0,0);
     players.all[socketID].id = socketID;
     
     socket.on('keydown', function(keyCode) {
@@ -59,12 +60,50 @@ function calculate() {
             player.position.x+=player.velocity.x;
             player.position.y+=player.velocity.y;
         }
+        for (var j=0;j<players.all.length;j++) {
+            var thisPlayer = players.all[j];
+
+            if (player && thisPlayer && i!=j) {
+                var deltaX = thisPlayer.position.x-player.position.x;
+                var deltaY = thisPlayer.position.y-player.position.y;
+                
+                var distance = Math.sqrt(deltaX*deltaX+deltaY*deltaY);
+
+                if (distance<player.radius+thisPlayer.radius) {
+                    var angle = Math.atan(deltaY/deltaX);
+                    var pushDistance = player.radius+thisPlayer.radius-distance;
+                    var newX = pushDistance * Math.cos(angle);
+                    var newY = deltaX<=0 ? pushDistance : pushDistance * Math.sin(angle);
+                    
+                    newX *= deltaX>0?-1:1;
+                    newY *= deltaY>0?-1:1;
+                    
+                    player.position.x += newX;
+                    player.position.y += newY;
+                }
+            }
+        }
+        for (var j=0;j<food.all.length;j++) {
+            var thisFood = food.all[j];
+
+            if (player && thisFood) {
+                var deltaX = thisFood.position.x-player.position.x;
+                var deltaY = thisFood.position.y-player.position.y;
+
+                if (deltaX*deltaX+deltaY*deltaY<Math.pow(player.radius+30,2)) {
+                    food.all[j] = null;
+                    player.radius += 5;
+                }
+            }
+        }
     }
+    if (Math.random()>.99) food.create(Math.random()*1000-500,Math.random()*1000-500);
     for (var i=0;i<sockets.length;i++) {
         var socket = sockets[i];
         if (socket) socket.emit('player-data', {id:i,players:players.all});
+        if (socket) socket.emit('food-data', {food:food.all});
     }
 }
 setInterval(calculate,1000/60);
 
-server.listen(3000, "192.168.0.150");
+server.listen(3000, '192.168.0.150');

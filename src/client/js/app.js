@@ -47,6 +47,9 @@ socket.on('player-data', function(data) {
     playerID = data.id;
     players.temp = data.players;
 });
+socket.on('food-data', function(data) {
+    food.all = data.food;
+});
 
 var prevTime = performance.now();
 function render() {
@@ -73,17 +76,17 @@ function render() {
 
     ctx.fillStyle = "#fff";
     ctx.fillRect(-100,-100,200,200);
-    
-    food.draw(0,0);
 
     for (var i=0;i<players.all.length;i++) {
         var player = players.all[i];
-        if (player) {
-            players.drawPlayer(player,delta);
-        }
+        if (player) players.drawPlayer(player,delta);
         
         var particle = Math.random()>.9;
         if (particle) addParticle(player);
+    }
+    for (var i=0;i<food.all.length;i++) {
+        var thisFood = food.all[i];
+        if (thisFood) food.draw(thisFood);
     }
 
     prevTime = time;

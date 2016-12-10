@@ -1,6 +1,6 @@
 module.exports.all = [];
 
-module.exports.createPlayer = function(type,x,y) {
+module.exports.create = function(type,x,y) {
     var text = "";
     if (type=="machine_code") {
         for (var i=0;i<4;i++) {
