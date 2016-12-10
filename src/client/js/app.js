@@ -43,11 +43,9 @@ document.onkeyup = function(e) {
 }
 
 var playerID;
-socket.on('player-data', function(data) {
+socket.on('packet-data', function(data) {
     playerID = data.id;
     players.temp = data.players;
-});
-socket.on('food-data', function(data) {
     food.all = data.food;
 });
 

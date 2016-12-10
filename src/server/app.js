@@ -100,8 +100,7 @@ function calculate() {
     if (Math.random()>.99) food.create(Math.random()*1000-500,Math.random()*1000-500);
     for (var i=0;i<sockets.length;i++) {
         var socket = sockets[i];
-        if (socket) socket.emit('player-data', {id:i,players:players.all});
-        if (socket) socket.emit('food-data', {food:food.all});
+        if (socket) socket.emit('packet-data', {id:i,players:players.all,food:food.all});
     }
 }
 setInterval(calculate,1000/60);
